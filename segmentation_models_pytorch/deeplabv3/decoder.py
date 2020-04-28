@@ -74,7 +74,7 @@ class DeepLabV3PlusDecoder(nn.Module):
         )
 
         scale_factor = 2 if output_stride == 8 else 4
-        self.up = nn.UpsamplingBilinear2d(scale_factor=scale_factor)
+        # self.up = nn.UpsamplingBilinear2d(scale_factor=scale_factor)
 
         highres_in_channels = encoder_channels[-4]
         highres_out_channels = 48   # proposed by authors of paper
@@ -97,7 +97,7 @@ class DeepLabV3PlusDecoder(nn.Module):
 
     def forward(self, *features):
         aspp_features = self.aspp(features[-1])
-        aspp_features = self.up(aspp_features)
+        # aspp_features = self.up(aspp_features)
         high_res_features = self.block1(features[-4])
         concat_features = torch.cat([aspp_features, high_res_features], dim=1)
         fused_features = self.block2(concat_features)
