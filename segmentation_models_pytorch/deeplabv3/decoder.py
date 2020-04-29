@@ -149,8 +149,10 @@ class ASPPPooling(nn.Sequential):
         size = x.shape[-2:]
         for mod in self:
             x = mod(x)
+        x = x.repeat(1, 1, size[0], size[1])
         # return F.interpolate(x, size=size, mode='bilinear', align_corners=False)
-        return torch.zeros(1,96,16,16)
+        # x = torch.zeros(1,96,16,16)
+        return x
 
 
 class ASPP(nn.Module):
