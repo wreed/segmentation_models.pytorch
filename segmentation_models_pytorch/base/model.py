@@ -17,6 +17,18 @@ class SegmentationModel(torch.nn.Module):
 
         masks = self.segmentation_head(decoder_output)
 
+        # import pdb;pdb.set_trace()
+
+        if False:
+            w = 128
+            h = 128
+            x2 = torch.zeros(masks.shape)
+            y = 3
+            shift_x = 3
+            # mask_2[:h-y, :w-x] = mask[y:y+(h-y), x:x+(w-x):]
+            x2[:,:,y:y+(h-y), shift_x:shift_x+(w-shift_x)] = masks[:,:,:h-y, :w-shift_x]
+            masks = x2
+
         if self.classification_head is not None:
             labels = self.classification_head(features[-1])
             return masks, labels

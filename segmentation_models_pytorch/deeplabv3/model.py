@@ -44,7 +44,7 @@ class DeepLabV3(SegmentationModel):
             in_channels: int = 3,
             classes: int = 1,
             activation: Optional[str] = None,
-            # upsampling: int = 8,
+            upsampling: int = 8,
             aux_params: Optional[dict] = None,
     ):
         super().__init__()
@@ -70,7 +70,7 @@ class DeepLabV3(SegmentationModel):
             out_channels=classes,
             activation=activation,
             kernel_size=1,
-            # upsampling=upsampling,
+            upsampling=upsampling,
         )
 
         if aux_params is not None:
@@ -123,7 +123,7 @@ Convolution for Semantic Image Segmentation"
             in_channels: int = 3,
             classes: int = 1,
             activation: Optional[str] = None,
-            # upsampling: int = 4,
+            upsampling: int = 4,
             aux_params: Optional[dict] = None,
     ):
         super().__init__()
@@ -163,7 +163,7 @@ Convolution for Semantic Image Segmentation"
             out_channels=classes,
             activation=activation,
             kernel_size=1,
-            # upsampling=upsampling,
+            upsampling=upsampling,
         )
 
         if aux_params is not None:

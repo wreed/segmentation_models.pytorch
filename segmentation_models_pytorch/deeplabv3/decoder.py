@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import torch
 from torch import nn
 from torch.nn import functional as F
+from ..base import Upsample
 
 __all__ = ["DeepLabV3Decoder"]
 
@@ -74,7 +75,8 @@ class DeepLabV3PlusDecoder(nn.Module):
         )
 
         scale_factor = 2 if output_stride == 8 else 4
-        self.up = nn.UpsamplingBilinear2d(scale_factor=scale_factor)
+        # self.up = nn.UpsamplingBilinear2d(scale_factor=scale_factor)
+        self.up = Upsample(scale_factor=upsampling)
 
         highres_in_channels = encoder_channels[-4]
         highres_out_channels = 48   # proposed by authors of paper
@@ -149,10 +151,9 @@ class ASPPPooling(nn.Sequential):
         size = x.shape[-2:]
         for mod in self:
             x = mod(x)
-        x = x.repeat(1, 1, size[0], size[1])
+
         # return F.interpolate(x, size=size, mode='bilinear', align_corners=False)
-        # x = torch.zeros(1,96,16,16)
-        return x
+        return F.interpolate(x, size=[int(size[0]), int(size[1])], mode="nearest")
 
 
 class ASPP(nn.Module):
