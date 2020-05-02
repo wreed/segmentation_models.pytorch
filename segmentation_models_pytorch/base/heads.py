@@ -18,13 +18,9 @@ class Upsample(nn.Module):
         w = int(w)
         h = int(h)
 
-        # nw = w + (int(w*.25))
-        # nh = h + (int(h*.25))
-        # x = F.interpolate(x, size=(nw,nh), mode='nearest')
-        # hack to fix onnx interpolation pos shift
-        if True:
-            x = F.interpolate(x, size=(20,20), mode='nearest')
-        # x = F.pad(x, (1,0,1,0), mode='replicate')
+        # hack to fix onnx interpolation shift when using bilinear upsampling
+        nw, nh = (20,20)
+        x = F.interpolate(x, size=(nw,nh), mode='nearest')
 
         nw = w * self.scale_factor
         nh = h * self.scale_factor
