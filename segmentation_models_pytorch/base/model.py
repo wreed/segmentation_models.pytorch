@@ -14,28 +14,25 @@ class SegmentationModel(torch.nn.Module):
             init.initialize_head(self.classification_head)
 
     def normalize(self, x):
-        # print(x.shape)
-        # x = x.permute(0, 2, 3, 1)
-        # print(x.shape)
+
         x = x / 255.
-        # x = x - mean
-        # x = x / std
-        for xi in range(3):
-            x[0][xi] = x[0][xi] - self.mean[xi]
-            x[0][xi] = x[0][xi] / self.std[xi]
-        # x = x.permute(0, 3, 1, 2)
-        # print(x.shape)
-        return x
+
+        r = (x[0][0] - self.mean[0]) / self.std[0]
+        g = (x[0][1] - self.mean[1]) / self.std[1]
+        b = (x[0][2] - self.mean[2]) / self.std[2]
+
+        x_norm = torch.unsqueeze(torch.stack((r,g,b), 0), 0)
+
+        return x_norm
 
     def forward(self, x):
         """Sequentially pass `x` trough model`s encoder, decoder and heads"""
-        # import pdb;pdb.set_trace()
         x = self.normalize(x)
         features = self.encoder(x)
         decoder_output = self.decoder(*features)
 
         masks = self.segmentation_head(decoder_output)
-        masks = masks * 255.
+        # masks = masks * 255.
 
         if self.classification_head is not None:
             labels = self.classification_head(features[-1])
