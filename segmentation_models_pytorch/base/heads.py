@@ -16,29 +16,24 @@ class Upsample(nn.Module):
         self.scale_factor = scale_factor
     def forward(self, x):
 
-        if False:
-            # import pdb;pdb.set_trace()
+        if True:
+
             # hack to fix onnx interpolation shift when using bilinear upsampling
-            b, c, w, h = x.shape
+            b, c, h, w = x.shape
             w = int(w)
             h = int(h)
             # print(w,h)
 
-            # 128
-            # nw, nh = (20,20)
-            # 178 x 100
-            # nw, nh = (15,25)
-            # 398 x 224
-            # nw, nh = (31,53)
-            # x = F.interpolate(x, size=(nw,nh), mode='nearest')
-
             nw = w * self.scale_factor
             nh = h * self.scale_factor
-            # nw = 1280
-            # nh = 720
-            x = F.interpolate(x, size=(nh,nw), mode='bilinear', align_corners=False)
 
-            # shift mask s pixels right to fix interpolation miss
+            # stretch to 8px more than needed
+            x = F.interpolate(x, size=(nh+8,nw+8), mode='bilinear', align_corners=False)
+
+            # extract center nw, nh
+            x = x[:,:,4:nh+4, 4:nw+4]
+
+            # shift mask down and right 4px
             sh, sw = 4, 4
             x = x[:,:,:-sh,:-sw]
             x = F.pad(input=x, pad=(sh, 0, sw, 0), mode='constant', value=-3)
@@ -46,7 +41,7 @@ class Upsample(nn.Module):
             return x
 
         else:
-            return F.interpolate(x, scale_factor=int(self.scale_factor), mode='bilinear')
+            return F.interpolate(x, scale_factor=int(self.scale_factor), mode='bilinear', align_corners=True)
 
 class SegmentationHead(nn.Sequential):
 

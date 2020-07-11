@@ -32,6 +32,7 @@ class SegmentationModel(torch.nn.Module):
         decoder_output = self.decoder(*features)
 
         masks = self.segmentation_head(decoder_output)
+        masks = torch.unsqueeze(torch.flatten(torch.squeeze(masks)), -1)
         # masks = masks * 255.
 
         if self.classification_head is not None:
