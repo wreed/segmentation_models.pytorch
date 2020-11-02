@@ -16,7 +16,7 @@ class Upsample(nn.Module):
         self.scale_factor = scale_factor
     def forward(self, x):
 
-        if True:
+        if False:
 
             # hack to fix onnx interpolation shift when using bilinear upsampling
             b, c, h, w = x.shape
